@@ -1,6 +1,5 @@
 package ru.mentorbank.backoffice.services.moneytransfer;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,6 +48,7 @@ public class MoneyTransferServiceTest extends AbstractSpringTest {
 
 		juridicalStopListRequest = new JuridicalStopListRequest();
 		juridicalStopListRequest.setInn(StopListServiceStub.INN_FOR_OK_STATUS);
+		juridicalStopListRequest.getClass();
 
 	}
 
@@ -68,10 +68,18 @@ public class MoneyTransferServiceTest extends AbstractSpringTest {
 		(moneyTransferService).setAccountService(mockedAccountService);
 		moneyTransferService.transfer(transferRequest);
 
-		// verify(mockedStopListService).getJuridicalStopListInfo(juridicalStopListRequest);
-		verify(mockedStopListService).getJuridicalStopListInfo(
-				any(JuridicalStopListRequest.class));
+		/*
+		 * verify(mockedStopListService).getJuridicalStopListInfo( refEq());
+		 */
 
+		/*
+		 * verify(mockedStopListService, never()).getJuridicalStopListInfo(
+		 * any(juridicalStopListRequest.getClass()));
+		 */
+		mockedStopListService
+				.getJuridicalStopListInfo(juridicalStopListRequest);
+		verify(mockedStopListService).getJuridicalStopListInfo(
+				juridicalStopListRequest);
 		verify(mockedAccountService).verifyBalance(dstAccountInfo);
 
 		// verify(mockedStopListService).getJuridicalStopListInfo(null);

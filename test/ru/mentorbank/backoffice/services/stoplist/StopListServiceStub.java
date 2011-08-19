@@ -32,6 +32,7 @@ public class StopListServiceStub implements StopListService {
 			stopListInfo.setStatus(StopListStatus.ASKSECURITY);
 		}
 		return stopListInfo;
+
 	}
 
 	// TODO :–≈¿À»«Œ¬¿“‹
@@ -47,7 +48,7 @@ public class StopListServiceStub implements StopListService {
 		} else {
 			stopListInfo.setStatus(StopListStatus.ASKSECURITY);
 		}
-		return null;
+		return stopListInfo;
 	}
 
 }
