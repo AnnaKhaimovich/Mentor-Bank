@@ -7,6 +7,10 @@ public class Account implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String accountNumber;
+	
+	public Account(String accountNumber){
+		this.accountNumber = accountNumber;
+	}
 
 	public String getAccountNumber() {
 		return accountNumber;

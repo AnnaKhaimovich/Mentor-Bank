@@ -1,7 +1,13 @@
 package ru.mentorbank.backoffice.services.moneytransfer;
 
+import java.util.GregorianCalendar;
+
 import ru.mentorbank.backoffice.dao.OperationDao;
+import ru.mentorbank.backoffice.dao.exception.OperationDaoException;
+import ru.mentorbank.backoffice.model.Account;
+import ru.mentorbank.backoffice.model.Operation;
 import ru.mentorbank.backoffice.model.stoplist.JuridicalStopListRequest;
+import ru.mentorbank.backoffice.model.stoplist.PhysicalStopListRequest;
 import ru.mentorbank.backoffice.model.stoplist.StopListInfo;
 import ru.mentorbank.backoffice.model.stoplist.StopListStatus;
 import ru.mentorbank.backoffice.model.transfer.AccountInfo;
@@ -66,6 +72,19 @@ public class MoneyTransferServiceBean implements MoneyTransferSerice {
 		private void saveOperation() {
 			// TODO: Необходимо сделать вызов операции saveOperation и сделать
 			// соответствующий тест вызова операции operationDao.saveOperation()
+			Operation operation = new Operation();
+			operation.setDstAccount(new Account(request.getDstAccount()
+					.getAccountNumber()));
+			operation.setSrcAccount(new Account(request.getSrcAccount()
+					.getAccountNumber()));
+			operation.setSrcStoplistInfo(srcStopListInfo);
+			operation.setDstStoplistInfo(dstStopListInfo);
+			operation.setCreateDate(new GregorianCalendar());
+			try {
+				operationDao.saveOperation(operation);
+			} catch (OperationDaoException e) {
+				e.printStackTrace();
+			}
 		}
 
 		private void transferDo() throws TransferException {
@@ -82,17 +101,29 @@ public class MoneyTransferServiceBean implements MoneyTransferSerice {
 		}
 
 		private StopListInfo getStopListInfo(AccountInfo accountInfo) {
+			StopListInfo stopListInfo = null;
+			
 			if (accountInfo instanceof JuridicalAccountInfo) {
 				JuridicalAccountInfo juridicalAccountInfo = (JuridicalAccountInfo) accountInfo;
 				JuridicalStopListRequest request = new JuridicalStopListRequest();
 				request.setInn(juridicalAccountInfo.getInn());
-				StopListInfo stopListInfo = stopListService
+				stopListInfo = stopListService
 						.getJuridicalStopListInfo(request);
 				return stopListInfo;
 			} else if (accountInfo instanceof PhysicalAccountInfo) {
 				// TODO: Сделать вызов stopListService для физических лиц
+				PhysicalAccountInfo physicalAccountInfo = (PhysicalAccountInfo) accountInfo;
+				PhysicalStopListRequest request = new PhysicalStopListRequest();
+				request.setDocumentNumber(physicalAccountInfo
+						.getDocumentNumber());
+				request.setDocumentSeries(physicalAccountInfo
+						.getDocumentSeries());
+				request.setFirstname(physicalAccountInfo.getFirstname());
+				request.setLastname(physicalAccountInfo.getLastname());
+				request.setMiddlename(physicalAccountInfo.getMiddlename());
+				stopListInfo = stopListService.getPhysicalStopListInfo(request);
 			}
-			return null;
+			return stopListInfo;
 		}
 
 		private boolean processStopListStatus(StopListInfo stopListInfo)
